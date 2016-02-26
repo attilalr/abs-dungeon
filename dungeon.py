@@ -73,7 +73,7 @@ class hero:
 
   def init_hero(self,name):
     self.name=name
-    self.atk=self.lvl
+    self.atk=self.lvl+random.randint(2,4)
 
   # hero take damage
   def take_dam(self,dano):
@@ -81,7 +81,7 @@ class hero:
 
   # calculate hero dam to the monster
   def blow_dam(self,lvl_monster):
-    blow_damage=self.atk
+    blow_damage=self.atk+random.randint(0,self.atk/4)
     if (blow_damage<0):
       blow_damage=0
     return blow_damage
@@ -105,8 +105,9 @@ class hero:
   # new level, add n levels, update other stats
   def new_lvl(self,n):
     self.lvl=self.lvl+n
-    print " Hero "+self.name+" passed to "+str(self.lvl)+" level!"
-    self.atk=self.atk+random.randint(1,3)
+    print " Hero "+self.name+" passed to level "+str(self.lvl)+"!"
+    self.atk=self.atk+random.randint(1,2)
+    raw_input(" (enter)")
 
 def round_hero(hero,monster):
     print " *** New round! ***"
@@ -164,9 +165,10 @@ while (len(m_list)!=0):
   while (1):
 
     if (raw_input(" (enter to fight, r to try to run)")=='r' and random.random()<0.5):
+      print
       print " *** Hero have sucessfully fled from battle! *** "
       print " Monster's life replenished!"
-      print
+      raw_input(" (enter)")
       m_list[m_idx].hp=m_list[m_idx].hp_max
       break
 
