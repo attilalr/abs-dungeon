@@ -2,6 +2,22 @@
 
 import random,sys
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+
+    def disable(self):
+        self.HEADER = ''
+        self.OKBLUE = ''
+        self.OKGREEN = ''
+        self.WARNING = ''
+        self.FAIL = ''
+        self.ENDC = ''
+
 # at least a or b
 def min(a,b):
   if a<b:
@@ -128,7 +144,7 @@ def round_monster(hero,monster):
     
 def hud_fight(hero,monster,size_screen,msg):
   print " Hero:"+(size_screen-len(" Hero:")-len("Monster:"))*" "+"Monster:"
-  print " "+hero.name+(size_screen-len(msg)-2*len(hero.name+" ")+2)/2*" "+msg+(size_screen-len(msg)-2*len(monster.name))/2*" "+monster.name
+  print " "+hero.name+(size_screen-len(msg)-2*len(hero.name+" ")+2)/2*" "+bcolors.OKGREEN+msg+bcolors.ENDC+(size_screen-len(msg)-2*len(monster.name))/2*" "+monster.name
   print " Lvl: "+str(hero.lvl)+str((size_screen-len(" Lvl: "+str(hero.lvl))-len("Lvl: "+str(monster.lvl)))*" ")+"Lvl: "+str(monster.lvl)
   print " HP: "+str(hero.hp)+'/'+str(hero.hp_max)+str((size_screen-len(" HP: "+str(hero.hp)+'/'+str(hero.hp_max))-len("HP: "+str(monster.hp)+'/'+str(monster.hp_max)))*" ")+"HP: "+str(monster.hp)+'/'+str(monster.hp_max)
 
@@ -141,7 +157,7 @@ print
 print " Create a hero:"
 nome=raw_input(" Name: ")
 
-size_screen=60
+size_screen=120
 
 # hero instance
 h=hero(nome)
@@ -166,8 +182,8 @@ while (len(m_list)!=0):
 
     if (raw_input(" (enter to fight, r to try to run)")=='r' and random.random()<0.5):
       print
-      print " *** Hero have sucessfully fled from battle! *** "
-      print " Monster's life replenished!"
+      print bcolors.OKBLUE+" *** Hero have sucessfully fled from battle! *** "+bcolors.ENDC
+      print bcolors.OKBLUE+" Monster's life replenished!"+bcolors.ENDC
       raw_input(" (enter)")
       m_list[m_idx].hp=m_list[m_idx].hp_max
       break
@@ -175,7 +191,7 @@ while (len(m_list)!=0):
     round_hero(h,m_list[m_idx])
     if (m_list[m_idx].isalive()==0):
       print
-      print " Monster "+m_list[m_idx].name+" was slain! Congratulations!"
+      print bcolors.WARNING+" Monster "+m_list[m_idx].name+" was slain! Congratulations!"+bcolors.ENDC
       h.new_lvl(1)
       del m_list[m_idx]
       raw_input(" (enter)")
