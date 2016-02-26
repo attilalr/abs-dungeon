@@ -56,7 +56,6 @@ class monster():
 
   # show monster profile and stats
   def show_profile(self):
-    print " Monster profile:"
     print " Nome: "+self.name
     print " Lvl: "+str(self.lvl)
     print " ATK: "+str(self.atk)
@@ -104,7 +103,6 @@ class hero:
 
   # show profile and stats
   def show_profile(self):
-    print " Hero's profile:"
     print " Name: "+self.name
     print " Class: "+self.profession
     print " Lvl: "+str(self.lvl)
@@ -126,7 +124,6 @@ class hero:
     raw_input(" (enter)")
 
 def round_hero(hero,monster):
-    print " *** New round! ***"
     atq_hero=hero.blow_dam(monster.lvl)
     if atq_hero==0:
       hud_fight(hero,monster,60," Hero missed the attack!")
@@ -151,11 +148,18 @@ def hud_fight(hero,monster,size_screen,msg):
 
 ######################## MAIN ###################
 print
-print " The beginning. Bla Bla Bla everybody is counting on you"
-print " to rid this evil from our village."
+print bcolors.FAIL+" The beginning. Bla Bla Bla everybody is counting on you"+bcolors.ENDC
+print bcolors.FAIL+" to rid this evil from our village."+bcolors.ENDC
 print
 print " Create a hero:"
 nome=raw_input(" Name: ")
+
+print bcolors.HEADER+"HEADER"
+print bcolors.OKBLUE+"OKBLUE"
+print bcolors.OKGREEN+"OKGREEN"
+print bcolors.WARNING+"WARNING"
+print bcolors.FAIL+"FAIL"+bcolors.ENDC
+
 
 size_screen=120
 
@@ -170,24 +174,36 @@ for i in range(10):
 
 while (len(m_list)!=0):
   print
-  print " There is "+str(len(m_list))+" monsters yet in the dungeon."
+  print bcolors.WARNING+" There is "+str(len(m_list))+" monsters yet in the dungeon."+bcolors.ENDC
   print
   m_idx=random.randint(0,len(m_list)-1) # pick a monster
-  print " ## Hero's profile ## "
+  print bcolors.OKBLUE+" ## Hero's profile ## "+bcolors.ENDC
   h.show_profile()
-  print " ##### New monster approaches !!! #####"
+  print bcolors.FAIL+" ##### New monster approaches !!! #####"+bcolors.ENDC
   m_list[m_idx].show_profile()
   # fight loop
   while (1):
 
-    if (raw_input(" (enter to fight, r to try to run)")=='r' and random.random()<0.5):
+    choice=raw_input(" (enter to fight, r to try to run)")
+    if (choice=='r' and random.random()<0.5):
       print
       print bcolors.OKBLUE+" *** Hero have sucessfully fled from battle! *** "+bcolors.ENDC
       print bcolors.OKBLUE+" Monster's life replenished!"+bcolors.ENDC
       raw_input(" (enter)")
       m_list[m_idx].hp=m_list[m_idx].hp_max
       break
+    elif (choice=='r'):
+      print
+      print bcolors.WARNING+" *** Hero haven't sucessfully fled from battle! *** "+bcolors.ENDC
+      print bcolors.WARNING+" Monster is attacking!"+bcolors.ENDC
+      round_monster(h,m_list[m_idx])
+      if (h.isalive()==0):
+        print
+        print " Our hero "+h.name+" is dead! Game over!"
+        sys.exit(0)
+      continue
 
+    print bcolors.WARNING+" "*(size_screen/2-len(" *** New round! ***")/2)+" *** New round! ***"+bcolors.ENDC
     round_hero(h,m_list[m_idx])
     if (m_list[m_idx].isalive()==0):
       print
