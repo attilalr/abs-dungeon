@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import random,sys
+import random,sys, os
 
 class bcolors:
     HEADER = '\033[95m'
@@ -41,10 +41,10 @@ class monster():
   def init_random(self):
     vog=['a','e','i','o','u','']
     cons=['b','c','d','f','g','h','j','l','m','x','w','z','']
-    self.lvl=random.randint(1,8)
-    self.name=''.join([random.choice(cons)+random.choice(vog) for n in range(3)])+'-'+str(self.lvl)
+    self.lvl=random.randint(1,7)
+    self.name=''.join([random.choice(cons)+random.choice(vog) for n in range(3)])
     self.atk=self.lvl+random.randint(0,2)
-    self.hp=min(10+self.lvl*random.randint(0,3),10)
+    self.hp=10*self.lvl+random.randint(0,2*self.lvl)
     self.hp_max=self.hp
 
   # calculate the damage from monster
@@ -78,6 +78,7 @@ class hero:
     self.name=''
     self.profession='fighter'
     self.lvl=1
+    self.lvl_max=8
     self.hp=100
     self.hp_max=self.hp
     self.mp=0
@@ -118,10 +119,20 @@ class hero:
 
   # new level, add n levels, update other stats
   def new_lvl(self,n):
-    self.lvl=self.lvl+n
-    print " Hero "+self.name+" passed to level "+str(self.lvl)+"!"
-    self.atk=self.atk+random.randint(1,2)
+    if (self.lvl<self.lvl_max):
+      self.lvl=self.lvl+n
+      print " Hero "+self.name+" passed to level "+str(self.lvl)+"!"
+      self.atk=self.atk+random.randint(1,2)
+    else:
+      print " Hero are already in max level "+str(self.lvl)+"!"
     raw_input(" (enter)")
+
+  def heal(self,p):
+    self.hp=self.hp+p
+    if (self.hp>self.hp_max):
+      self.hp=self.hp_max
+
+### FUNCTIONS ###
 
 def round_hero(hero,monster):
     atq_hero=hero.blow_dam(monster.lvl)
@@ -140,11 +151,16 @@ def round_monster(hero,monster):
       hud_fight(hero,monster,60," The monster inflicted "+str(atq_monster)+" damage points!")
     
 def hud_fight(hero,monster,size_screen,msg):
-  print " Hero:"+(size_screen-len(" Hero:")-len("Monster:"))*" "+"Monster:"
-  print " "+hero.name+(size_screen-len(msg)-2*len(hero.name+" ")+2)/2*" "+bcolors.OKGREEN+msg+bcolors.ENDC+(size_screen-len(msg)-2*len(monster.name))/2*" "+monster.name
+  print_lmr(" Hero:","","Monster:","","","",bcolors.ENDC,size_screen)
+  print_lmr(" "+hero.name,msg,monster.name,"",bcolors.OKGREEN,"",bcolors.ENDC,size_screen)
   print " Lvl: "+str(hero.lvl)+str((size_screen-len(" Lvl: "+str(hero.lvl))-len("Lvl: "+str(monster.lvl)))*" ")+"Lvl: "+str(monster.lvl)
   print " HP: "+str(hero.hp)+'/'+str(hero.hp_max)+str((size_screen-len(" HP: "+str(hero.hp)+'/'+str(hero.hp_max))-len("HP: "+str(monster.hp)+'/'+str(monster.hp_max)))*" ")+"HP: "+str(monster.hp)+'/'+str(monster.hp_max)
 
+def print_m(msg,color,colorend,s_size):
+  print color+" "*(s_size/2-len(msg)/2)+msg+colorend
+
+def print_lmr(msgl,msgm,msgr,colorl,colorm,colorr,colorend,s_size):
+  print colorl+msgl+" "*(s_size/2-len(msgm)/2-len(msgl))+colorm+msgm+" "*(s_size/2-len(msgr)-len(msgm)/2)+colorend
 
 ######################## MAIN ###################
 print
@@ -160,8 +176,12 @@ print bcolors.OKGREEN+"OKGREEN"
 print bcolors.WARNING+"WARNING"
 print bcolors.FAIL+"FAIL"+bcolors.ENDC
 
-
-size_screen=120
+try:
+  rows, columns = os.popen('stty size', 'r').read().split()
+except:
+  print " Something wen wrong when getting terminal size."
+  sys.exit(0) 
+size_screen=int(columns)
 
 # hero instance
 h=hero(nome)
@@ -169,17 +189,18 @@ h.show_profile()
 
 # monster list creation
 m_list=list()
-for i in range(10):
+for i in range(20):
   m_list.append(monster())
 
 while (len(m_list)!=0):
   print
-  print bcolors.WARNING+" There is "+str(len(m_list))+" monsters yet in the dungeon."+bcolors.ENDC
+  print_m(" There is "+str(len(m_list))+" monsters yet in the dungeon.",bcolors.WARNING,bcolors.ENDC,size_screen)
   print
   m_idx=random.randint(0,len(m_list)-1) # pick a monster
   print bcolors.OKBLUE+" ## Hero's profile ## "+bcolors.ENDC
   h.show_profile()
-  print bcolors.FAIL+" ##### New monster approaches !!! #####"+bcolors.ENDC
+  print_m(" ##### New monster approaches !!! #####",bcolors.FAIL,bcolors.ENDC,size_screen)
+
   m_list[m_idx].show_profile()
   # fight loop
   while (1):
@@ -187,15 +208,14 @@ while (len(m_list)!=0):
     choice=raw_input(" (enter to fight, r to try to run)")
     if (choice=='r' and random.random()<0.5):
       print
-      print bcolors.OKBLUE+" *** Hero have sucessfully fled from battle! *** "+bcolors.ENDC
-      print bcolors.OKBLUE+" Monster's life replenished!"+bcolors.ENDC
-      raw_input(" (enter)")
+      print_m(" *** Hero have sucessfully fled from battle! *** ",bcolors.OKBLUE,bcolors.ENDC,size_screen)
+      print_m(" Monster's life replenished!",bcolors.OKBLUE,bcolors.ENDC,size_screen)
       m_list[m_idx].hp=m_list[m_idx].hp_max
       break
     elif (choice=='r'):
       print
-      print bcolors.WARNING+" *** Hero haven't sucessfully fled from battle! *** "+bcolors.ENDC
-      print bcolors.WARNING+" Monster is attacking!"+bcolors.ENDC
+      print_m(" *** Hero haven't sucessfully fled from battle! *** ",bcolors.WARNING,bcolors.ENDC,size_screen)
+      print_m("Monster is attacking!",bcolors.WARNING,bcolors.ENDC,size_screen)
       round_monster(h,m_list[m_idx])
       if (h.isalive()==0):
         print
@@ -208,7 +228,10 @@ while (len(m_list)!=0):
     if (m_list[m_idx].isalive()==0):
       print
       print bcolors.WARNING+" Monster "+m_list[m_idx].name+" was slain! Congratulations!"+bcolors.ENDC
+      healing=random.randint(h.lvl,2*h.lvl)
+      print bcolors.OKBLUE+" Hero cured for "+str(healing)+" hitpoints!."+bcolors.ENDC
       h.new_lvl(1)
+      h.heal(healing)
       del m_list[m_idx]
       raw_input(" (enter)")
       break #sai da luta
