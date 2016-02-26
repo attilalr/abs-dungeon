@@ -16,6 +16,7 @@ class monster():
     self.atk=0
     self.lvl=0
     self.hp=0
+    self.hp_max=0
 
     if (init=='random'):
       self.init_random()
@@ -27,11 +28,12 @@ class monster():
     self.lvl=random.randint(1,8)
     self.name=''.join([random.choice(cons)+random.choice(vog) for n in range(3)])+'-'+str(self.lvl)
     self.atk=self.lvl+random.randint(0,2)
-    self.hp=min(self.lvl*random.randint(0,3),1)
+    self.hp=min(10+self.lvl*random.randint(0,3),10)
+    self.hp_max=self.hp
 
   # calculate the damage from monster
   def blow_dam(self,lvl_hero):
-    blow_damage=self.atk
+    blow_damage=self.atk+random.randint(0,3)
     if (blow_damage<0):
       blow_damage=0
     return blow_damage
@@ -42,7 +44,7 @@ class monster():
     print " Nome: "+self.name
     print " Lvl: "+str(self.lvl)
     print " ATK: "+str(self.atk)
-    print " HP: "+str(self.hp)
+    print " HP: "+str(self.hp)+"/"+str(self.hp_max)
 
   # method to take damage
   def take_dam(self,dano):
@@ -62,6 +64,7 @@ class hero:
     self.profession='fighter'
     self.lvl=1
     self.hp=100
+    self.hp_max=self.hp
     self.mp=0
     self.xp=0
     self.atk=0
@@ -90,7 +93,7 @@ class hero:
     print " Class: "+self.profession
     print " Lvl: "+str(self.lvl)
     print " ATK: "+str(self.atk)
-    print " HP: "+str(self.hp)
+    print " HP: "+str(self.hp)+"/"+str(self.hp_max)
 
   # check if it is alive
   def isalive(self):
@@ -110,9 +113,7 @@ def round_hero(hero,monster):
     atq_hero=hero.blow_dam(monster.lvl)
     if atq_hero==0:
       hud_fight(hero,monster,60," Hero missed the attack!")
-      #print " O heroi errou o ataque!"
     else:
-      #print " O heroi provocou "+str(atq_hero)+" pontos de dano!"
       monster.take_dam(atq_hero)
       hud_fight(hero,monster,60," Hero inflicted "+str(atq_hero)+" damage points!")
       
@@ -128,7 +129,7 @@ def hud_fight(hero,monster,size_screen,msg):
   print " Hero:"+(size_screen-len(" Hero:")-len("Monster:"))*" "+"Monster:"
   print " "+hero.name+(size_screen-len(msg)-2*len(hero.name+" ")+2)/2*" "+msg+(size_screen-len(msg)-2*len(monster.name))/2*" "+monster.name
   print " Lvl: "+str(hero.lvl)+str((size_screen-len(" Lvl: "+str(hero.lvl))-len("Lvl: "+str(monster.lvl)))*" ")+"Lvl: "+str(monster.lvl)
-  print " HP: "+str(hero.hp)+str((size_screen-len(" HP: "+str(hero.hp))-len("HP: "+str(monster.hp)))*" ")+"HP: "+str(monster.hp)
+  print " HP: "+str(hero.hp)+'/'+str(hero.hp_max)+str((size_screen-len(" HP: "+str(hero.hp)+'/'+str(hero.hp_max))-len("HP: "+str(monster.hp)+'/'+str(monster.hp_max)))*" ")+"HP: "+str(monster.hp)+'/'+str(monster.hp_max)
 
 
 ######################## MAIN ###################
@@ -159,9 +160,15 @@ while (len(m_list)!=0):
   h.show_profile()
   print " ##### New monster approaches !!! #####"
   m_list[m_idx].show_profile()
-  raw_input(" (enter)")
-  # laco da luta
+  # fight loop
   while (1):
+
+    if (raw_input(" (enter to fight, r to try to run)")=='r' and random.random()<0.5):
+      print " *** Hero have sucessfully fled from battle! *** "
+      print " Monster's life replenished!"
+      print
+      m_list[m_idx].hp=m_list[m_idx].hp_max
+      break
 
     round_hero(h,m_list[m_idx])
     if (m_list[m_idx].isalive()==0):
