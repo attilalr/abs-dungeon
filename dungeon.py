@@ -38,7 +38,7 @@ class monster():
 
   # show monster profile and stats
   def show_profile(self):
-    print " Ficha do monstro:"
+    print " Monster profile:"
     print " Nome: "+self.name
     print " Lvl: "+str(self.lvl)
     print " ATK: "+str(self.atk)
@@ -85,9 +85,9 @@ class hero:
 
   # show profile and stats
   def show_profile(self):
-    print " Ficha:"
-    print " Nome: "+self.name
-    print " Classe: "+self.profession
+    print " Hero's profile:"
+    print " Name: "+self.name
+    print " Class: "+self.profession
     print " Lvl: "+str(self.lvl)
     print " ATK: "+str(self.atk)
     print " HP: "+str(self.hp)
@@ -106,23 +106,23 @@ class hero:
     self.atk=self.atk+random.randint(1,3)
 
 def round_hero(hero,monster):
-    print " *** Novo round! ***"
+    print " *** New round! ***"
     atq_hero=hero.blow_dam(monster.lvl)
     if atq_hero==0:
-      hud_fight(hero,monster,60," O heroi errou o ataque!")
+      hud_fight(hero,monster,60," Hero missed the attack!")
       #print " O heroi errou o ataque!"
     else:
       #print " O heroi provocou "+str(atq_hero)+" pontos de dano!"
       monster.take_dam(atq_hero)
-      hud_fight(hero,monster,60," O heroi provocou "+str(atq_hero)+" pontos de dano!")
+      hud_fight(hero,monster,60," Hero inflicted "+str(atq_hero)+" damage points!")
       
 def round_monster(hero,monster):
     atq_monster=monster.blow_dam(hero.lvl)
     if atq_monster==0:
-      hud_fight(hero,monster,60," O monstro errou o ataque!")
+      hud_fight(hero,monster,60," Monster missed the attack!")
     else:
       hero.take_dam(atq_monster)
-      hud_fight(hero,monster,60," O monstro provocou "+str(atq_monster)+" pontos de dano!")
+      hud_fight(hero,monster,60," The monster inflicted "+str(atq_monster)+" damage points!")
     
 def hud_fight(hero,monster,size_screen,msg):
   print " Hero:"+(size_screen-len(" Hero:")-len("Monster:"))*" "+"Monster:"
@@ -133,8 +133,11 @@ def hud_fight(hero,monster,size_screen,msg):
 
 ######################## MAIN ###################
 print
-print "Comeco. Create a hero:"
-nome=raw_input("Name: ")
+print " The beginning. Bla Bla Bla everybody is counting on you"
+print " to rid this evil from our village."
+print
+print " Create a hero:"
+nome=raw_input(" Name: ")
 
 size_screen=60
 
@@ -151,12 +154,12 @@ while (len(m_list)!=0):
   print
   print " There is "+str(len(m_list))+" monsters yet in the dungeon."
   print
-  m_idx=random.randint(0,len(m_list)-1) # monstro sorteado
+  m_idx=random.randint(0,len(m_list)-1) # pick a monster
   print " ## Hero's profile ## "
   h.show_profile()
   print " ##### New monster approaches !!! #####"
   m_list[m_idx].show_profile()
-  raw_input("(enter)")
+  raw_input(" (enter)")
   # laco da luta
   while (1):
 
@@ -176,8 +179,6 @@ while (len(m_list)!=0):
       print " Our hero "+h.name+" is dead! Game over!"
       sys.exit(0)
 
-    #print " Hero's HP: "+str(h.hp)
-    #print " Monters's HP: "+str(m_list[m_idx].hp)
     raw_input(" (enter for next round!)")
 
 print
