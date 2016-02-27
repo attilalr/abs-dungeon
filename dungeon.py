@@ -75,9 +75,9 @@ class monster():
 
 # hero class!
 class hero:
-  def __init__(self,name,prof,prof_list):
+  def __init__(self,name,prof_dict):
     self.name=name
-    self.profession=prof_list[int(prof)]
+    self.profession=prof_dict['name']
     self.lvl=1
     self.lvl_max=8
     self.hp=100
@@ -85,13 +85,12 @@ class hero:
     self.mp=0
     self.xp=0
     self.atk=0
-    if self.profession=='fighter':
-      self.armor=3
-      self.run_chance=0.45
-    elif self.profession=='scoundrel':
-      self.armor=0
-      self.run_chance=0.65
-    self.atk=self.lvl+random.randint(2,4)
+    self.armor=0
+    self.run_chance=0.40
+    self.atk=self.lvl+2
+
+    # ugly and dangerous
+    exec compile(prof_dict['apply'],'<string>','exec')
 
   # hero take damage
   def take_dam(self,dano):
@@ -103,7 +102,7 @@ class hero:
 
   # calculate hero dam to the monster
   def blow_dam(self,lvl_monster):
-    blow_damage=self.atk+random.randint(0,self.atk/4)
+    blow_damage=self.atk+random.randint(0,3)+random.randint(0,self.lvl/4)
     if (blow_damage<0):
       blow_damage=0
     return blow_damage
@@ -114,6 +113,8 @@ class hero:
     print " Class: "+self.profession
     print " Lvl: "+str(self.lvl)
     print " ATK: "+str(self.atk)
+    print " ARMOR: "+str(self.armor)
+    print " RUN%: "+str(self.run_chance)
     print " HP: "+str(self.hp)+"/"+str(self.hp_max)
 
   # check if it is alive
@@ -173,6 +174,13 @@ def print_lmr(msgl,msgm,msgr,colorl,colorm,colorr,colorend,s_size):
   print colorl+" "+msgl+" "*(s_size/2-len(msgm)/2-len(msgl)-1)+colorm+msgm+" "*(s_size/2-len(msgr)-len(msgm)/2-1)+colorend
 
 ######################## MAIN ###################
+try:
+  rows, columns = os.popen('stty size', 'r').read().split()
+except:
+  print " Something went wrong when getting terminal size."
+  sys.exit(0) 
+size_screen=int(columns)
+
 print
 print bcolors.FAIL+" The beginning. Bla Bla Bla everybody is counting on you"+bcolors.ENDC
 print bcolors.FAIL+" to rid this evil from our village."+bcolors.ENDC
@@ -180,30 +188,23 @@ print
 print " Create a hero:"
 nome=raw_input(" Name: ")
 
-class_list=['fighter','scoundrel']
-for i in enumerate(class_list):
-  print " "+str(i[0])+": "+i[1]
+scoundrel_dict={'name':'Scoundrel','description':'The scoundrel have 65% chance of fleeing a fight.','apply':'self.run_chance=0.65'}
+fighter_dict={'name':'Fighter','description':'The fighter class gives 3 points of armor.','apply':'self.armor=self.armor+3'}
+
+class_list=[fighter_dict,scoundrel_dict]
+for i,j in zip(range(len(class_list)),class_list):
+  print " "+str(i)+": "+j['name']
 prof=''
 if (prof not in range(0,len(class_list))):
   prof=raw_input(" Choose class:")
-print prof
 
-print bcolors.HEADER+"HEADER"
-print bcolors.OKBLUE+"OKBLUE"
-print bcolors.OKGREEN+"OKGREEN"
-print bcolors.WARNING+"WARNING"
-print bcolors.FAIL+"FAIL"+bcolors.ENDC
-
-try:
-  rows, columns = os.popen('stty size', 'r').read().split()
-except:
-  print " Something wen wrong when getting terminal size."
-  sys.exit(0) 
-size_screen=int(columns)
+print_m(class_list[int(prof)]['description'],bcolors.OKBLUE,bcolors.ENDC,size_screen)
 
 # hero instance
-h=hero(nome,prof,class_list)
+h=hero(nome,class_list[int(prof)])
 h.show_profile()
+
+raw_input(" (enter)")
 
 # monster list creation
 m_list=list()
@@ -224,6 +225,7 @@ while (len(m_list)!=0):
   while (1):
 
     choice=raw_input(" (enter to fight, r to try to run)")
+    print h.run_chance
     if (choice=='r' and random.random()<h.run_chance):
       print
       print_m(" *** Hero have sucessfully fled from battle! *** ",bcolors.OKBLUE,bcolors.ENDC,size_screen)
