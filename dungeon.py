@@ -43,8 +43,9 @@ class monster():
     cons=['b','c','d','f','g','h','j','l','m','x','w','z','']
     self.lvl=random.randint(1,7)
     self.name=''.join([random.choice(cons)+random.choice(vog) for n in range(3)])
+    self.name=self.name.capitalize()
     self.atk=self.lvl+random.randint(0,2)
-    self.hp=10*self.lvl+random.randint(0,2*self.lvl)
+    self.hp=10*self.lvl+random.randint(-self.lvl,2*self.lvl)
     self.hp_max=self.hp
 
   # calculate the damage from monster
@@ -74,9 +75,9 @@ class monster():
 
 # hero class!
 class hero:
-  def __init__(self,name):
-    self.name=''
-    self.profession='fighter'
+  def __init__(self,name,prof,prof_list):
+    self.name=name
+    self.profession=prof_list[int(prof)]
     self.lvl=1
     self.lvl_max=8
     self.hp=100
@@ -84,16 +85,21 @@ class hero:
     self.mp=0
     self.xp=0
     self.atk=0
-
-    self.init_hero(name)
-
-  def init_hero(self,name):
-    self.name=name
+    if self.profession=='fighter':
+      self.armor=3
+      self.run_chance=0.45
+    elif self.profession=='scoundrel':
+      self.armor=0
+      self.run_chance=0.65
     self.atk=self.lvl+random.randint(2,4)
 
   # hero take damage
   def take_dam(self,dano):
-    self.hp=self.hp-dano
+    if ((dano-self.armor)>=0):
+      self.hp=self.hp-(dano-self.armor)
+      return (dano-self.armor)
+    else:
+      return "The Hero's armor absorbed the blow!"
 
   # calculate hero dam to the monster
   def blow_dam(self,lvl_monster):
@@ -134,21 +140,25 @@ class hero:
 
 ### FUNCTIONS ###
 
-def round_hero(hero,monster):
+def round_hero(hero,monster,s):
     atq_hero=hero.blow_dam(monster.lvl)
     if atq_hero==0:
-      hud_fight(hero,monster,60," Hero missed the attack!")
+      hud_fight(hero,monster,s," Hero missed the attack!")
     else:
       monster.take_dam(atq_hero)
-      hud_fight(hero,monster,60," Hero inflicted "+str(atq_hero)+" damage points!")
+      hud_fight(hero,monster,s," Hero inflicted "+str(atq_hero)+" damage points!")
       
-def round_monster(hero,monster):
+def round_monster(hero,monster,s):
     atq_monster=monster.blow_dam(hero.lvl)
     if atq_monster==0:
-      hud_fight(hero,monster,60," Monster missed the attack!")
+      hud_fight(hero,monster,s," Monster missed the attack!")
     else:
-      hero.take_dam(atq_monster)
-      hud_fight(hero,monster,60," The monster inflicted "+str(atq_monster)+" damage points!")
+      damage=hero.take_dam(atq_monster)
+      if (type(damage)==type(1)):
+        hud_fight(hero,monster,s," The monster inflicted "+str(atq_monster)+"-"+str(hero.armor)+"="+str(damage)+" damage points!")
+      else:
+        hud_fight(hero,monster,s," The Hero's armor absorbed the "+str(atq_monster)+" damage points!")
+
     
 def hud_fight(hero,monster,size_screen,msg):
   print_lmr(" Hero:","","Monster:","","","",bcolors.ENDC,size_screen)
@@ -170,6 +180,14 @@ print
 print " Create a hero:"
 nome=raw_input(" Name: ")
 
+class_list=['fighter','scoundrel']
+for i in enumerate(class_list):
+  print " "+str(i[0])+": "+i[1]
+prof=''
+if (prof not in range(0,len(class_list))):
+  prof=raw_input(" Choose class:")
+print prof
+
 print bcolors.HEADER+"HEADER"
 print bcolors.OKBLUE+"OKBLUE"
 print bcolors.OKGREEN+"OKGREEN"
@@ -184,7 +202,7 @@ except:
 size_screen=int(columns)
 
 # hero instance
-h=hero(nome)
+h=hero(nome,prof,class_list)
 h.show_profile()
 
 # monster list creation
@@ -206,7 +224,7 @@ while (len(m_list)!=0):
   while (1):
 
     choice=raw_input(" (enter to fight, r to try to run)")
-    if (choice=='r' and random.random()<0.5):
+    if (choice=='r' and random.random()<h.run_chance):
       print
       print_m(" *** Hero have sucessfully fled from battle! *** ",bcolors.OKBLUE,bcolors.ENDC,size_screen)
       print_m(" Monster's life replenished!",bcolors.OKBLUE,bcolors.ENDC,size_screen)
@@ -216,7 +234,7 @@ while (len(m_list)!=0):
       print
       print_m(" *** Hero haven't sucessfully fled from battle! *** ",bcolors.WARNING,bcolors.ENDC,size_screen)
       print_m("Monster is attacking!",bcolors.WARNING,bcolors.ENDC,size_screen)
-      round_monster(h,m_list[m_idx])
+      round_monster(h,m_list[m_idx],size_screen)
       if (h.isalive()==0):
         print
         print " Our hero "+h.name+" is dead! Game over!"
@@ -224,7 +242,7 @@ while (len(m_list)!=0):
       continue
 
     print bcolors.WARNING+" "*(size_screen/2-len(" *** New round! ***")/2)+" *** New round! ***"+bcolors.ENDC
-    round_hero(h,m_list[m_idx])
+    round_hero(h,m_list[m_idx],size_screen)
     if (m_list[m_idx].isalive()==0):
       print
       print bcolors.WARNING+" Monster "+m_list[m_idx].name+" was slain! Congratulations!"+bcolors.ENDC
@@ -237,7 +255,7 @@ while (len(m_list)!=0):
       break #sai da luta
 
     print " *"
-    round_monster(h,m_list[m_idx])
+    round_monster(h,m_list[m_idx],size_screen)
     if (h.isalive()==0):
       print
       print " Our hero "+h.name+" is dead! Game over!"
