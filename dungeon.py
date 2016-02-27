@@ -95,7 +95,7 @@ class hero:
 
   # hero take damage
   def take_dam(self,dano):
-    if ((dano-self.armor)>=0):
+    if ((dano-self.armor)>0):
       self.hp=self.hp-(dano-self.armor)
       return (dano-self.armor)
     else:
@@ -157,7 +157,7 @@ def round_monster(hero,monster,s):
       if (type(damage)==type(1)):
         hud_fight(hero,monster,s," The monster inflicted "+str(atq_monster)+"-"+str(hero.armor)+"="+str(damage)+" damage points!")
       else:
-        hud_fight(hero,monster,s," The Hero's armor absorbed the "+str(atq_monster)+" damage points!")
+        hud_fight(hero,monster,s,damage)
 
     
 def hud_fight(hero,monster,size_screen,msg):
@@ -170,7 +170,7 @@ def print_m(msg,color,colorend,s_size):
   print color+" "*(s_size/2-len(msg)/2)+msg+colorend
 
 def print_lmr(msgl,msgm,msgr,colorl,colorm,colorr,colorend,s_size):
-  print colorl+msgl+" "*(s_size/2-len(msgm)/2-len(msgl))+colorm+msgm+" "*(s_size/2-len(msgr)-len(msgm)/2)+colorend
+  print colorl+" "+msgl+" "*(s_size/2-len(msgm)/2-len(msgl)-1)+colorm+msgm+" "*(s_size/2-len(msgr)-len(msgm)/2-1)+colorend
 
 ######################## MAIN ###################
 print
