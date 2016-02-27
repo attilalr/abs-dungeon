@@ -125,11 +125,11 @@ class hero:
       return 0
 
   # new level, add n levels, update other stats
-  def new_lvl(self,n):
+  def new_lvl(self,n,prog):
     if (self.lvl<self.lvl_max):
+      exec compile(prog[self.lvl-1],'<string>','exec')
       self.lvl=self.lvl+n
       print " Hero "+self.name+" passed to level "+str(self.lvl)+"!"
-      self.atk=self.atk+random.randint(1,2)
     else:
       print " Hero are already in max level "+str(self.lvl)+"!"
     raw_input(" (enter)")
@@ -188,8 +188,8 @@ print
 print " Create a hero:"
 nome=raw_input(" Name: ")
 
-scoundrel_dict={'name':'Scoundrel','description':'The scoundrel have 65% chance of fleeing a fight.','apply':'self.run_chance=0.65'}
-fighter_dict={'name':'Fighter','description':'The fighter class gives 3 points of armor.','apply':'self.armor=self.armor+3'}
+scoundrel_dict={'name':'Scoundrel','description':'The scoundrel have 70% chance of fleeing a fight.','apply':'self.run_chance=0.70','progression':['self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1']}
+fighter_dict={'name':'Fighter','description':'The fighter class gives 3 points of armor.','apply':'self.armor=self.armor+3','progression':['self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1']}
 
 class_list=[fighter_dict,scoundrel_dict]
 for i,j in zip(range(len(class_list)),class_list):
@@ -248,9 +248,9 @@ while (len(m_list)!=0):
     if (m_list[m_idx].isalive()==0):
       print
       print bcolors.WARNING+" Monster "+m_list[m_idx].name+" was slain! Congratulations!"+bcolors.ENDC
-      healing=random.randint(h.lvl,2*h.lvl)
+      healing=random.randint(8,8+h.lvl)
       print bcolors.OKBLUE+" Hero cured for "+str(healing)+" hitpoints!."+bcolors.ENDC
-      h.new_lvl(1)
+      h.new_lvl(1,class_list[int(prof)]['progression'])
       h.heal(healing)
       del m_list[m_idx]
       raw_input(" (enter)")
