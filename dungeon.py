@@ -256,7 +256,7 @@ while (len(m_list)!=0):
       print bcolors.WARNING+" Monster "+m_list[m_idx].name+" was slain! Congratulations!"+bcolors.ENDC
 
       ## score update section
-      if ((h.lvl-m_list[m_idx].lvl)<-5):
+      if ((h.lvl-m_list[m_idx].lvl)>5):
         score_adj=(m_list[m_idx].lvl*100)*(-1)/2
       else:
         score_adj=(-h.lvl+m_list[m_idx].lvl)*(m_list[m_idx].lvl*100)/5
