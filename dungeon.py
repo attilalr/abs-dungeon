@@ -88,6 +88,7 @@ class hero:
     self.hp_max=self.hp
     self.mp=0
     self.xp=0
+    self.score=0
     self.atk=0
     self.armor=0
     self.run_chance=0.40
@@ -253,8 +254,24 @@ while (len(m_list)!=0):
     if (m_list[m_idx].isalive()==0):
       print
       print bcolors.WARNING+" Monster "+m_list[m_idx].name+" was slain! Congratulations!"+bcolors.ENDC
+
+      ## score update section
+      if ((h.lvl-m_list[m_idx].lvl)<-5):
+        score_adj=(m_list[m_idx].lvl*100)*(-1)/2
+      else:
+        score_adj=(-h.lvl+m_list[m_idx].lvl)*(m_list[m_idx].lvl*100)/5
+      score_gained=m_list[m_idx].lvl*100+score_adj
+      h.score=h.score+score_gained
+      print bcolors.WARNING+" Gained "+str(score_gained)+" points."+bcolors.ENDC
+      if (score_adj>0):
+        print bcolors.WARNING+" (Extra "+str(score_adj)+" points for the challenge!)"+bcolors.ENDC
+      if (score_adj<0):
+        print bcolors.WARNING+" (Penality of "+str(abs(score_adj))+" points for kicking the dead dog.)"+bcolors.ENDC
+
+      ## healing
       healing=random.randint(8,8+h.lvl)
       print bcolors.OKBLUE+" Hero cured for "+str(healing)+" hitpoints!."+bcolors.ENDC
+
       h.new_lvl(1,class_list[int(prof)]['progression'])
       h.heal(healing)
       del m_list[m_idx]
@@ -266,10 +283,13 @@ while (len(m_list)!=0):
     if (h.isalive()==0):
       print
       print " Our hero "+h.name+" is dead! Game over!"
+      print " Score: "+str(h.score)
+      print
       sys.exit(0)
 
     raw_input(" (enter for next round!)")
 
 print
 print " You survived the dungeon! Congratulations!"
+print " Score: "+str(h.score)
 print 
