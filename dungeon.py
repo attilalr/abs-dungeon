@@ -41,9 +41,13 @@ class monster():
   def init_random(self):
     vog=['a','e','i','o','u','']
     cons=['b','c','d','f','g','h','j','l','m','x','w','z','']
+    adj=['adorable','huggable','flirty','dainty','fuzzy','cutesy','charming','Fluffy','Shiny','Sparkly','Poofy','Lulzy','Chu']
+    enemies=['rabbit','lizard','Cthulhu offspring','goblin','Magic Player','Skeleton','Vampire','Ghoul','Ghost','?','Dragon','Fallen Elf','Slime','worm','ice man','fire man','ant','mad time traveler','']
     self.lvl=random.randint(1,7)
     self.name=''.join([random.choice(cons)+random.choice(vog) for n in range(3)])
     self.name=self.name.capitalize()
+    if (self.lvl==1 or self.lvl==2 or self.lvl==3):
+      self.name=random.choice(adj).capitalize()+" "+random.choice(enemies).capitalize()
     self.atk=self.lvl+random.randint(0,2)
     self.hp=10*self.lvl+random.randint(-self.lvl,2*self.lvl)
     self.hp_max=self.hp
@@ -79,7 +83,7 @@ class hero:
     self.name=name
     self.profession=prof_dict['name']
     self.lvl=1
-    self.lvl_max=8
+    self.lvl_max=len(prof_dict['progression'])
     self.hp=100
     self.hp_max=self.hp
     self.mp=0
@@ -90,7 +94,7 @@ class hero:
     self.atk=self.lvl+2
 
     # ugly and dangerous
-    exec compile(prof_dict['apply'],'<string>','exec')
+    exec compile(prof_dict['progression'][0],'<string>','exec')
 
   # hero take damage
   def take_dam(self,dano):
@@ -188,17 +192,18 @@ print
 print " Create a hero:"
 nome=raw_input(" Name: ")
 
-scoundrel_dict={'name':'Scoundrel','description':'The scoundrel have 70% chance of fleeing a fight.','apply':'self.run_chance=0.70','progression':['self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1']}
-fighter_dict={'name':'Fighter','description':'The fighter class gives 3 points of armor.','apply':'self.armor=self.armor+3','progression':['self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1']}
+scoundrel_dict={'name':'Scoundrel','description':'The scoundrel have 70% chance of fleeing a fight.','progression':['self.atk=self.atk+1; self.run_chance=0.70','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1']}
+fighter_dict={'name':'Fighter','description':'The fighter class gives 3 points of armor.','progression':['self.atk=self.atk+1; self.armor=self.armor+3','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1']}
 
+## CLASS SELECTION ##
 class_list=[fighter_dict,scoundrel_dict]
 for i,j in zip(range(len(class_list)),class_list):
   print " "+str(i)+": "+j['name']
-prof=''
-if (prof not in range(0,len(class_list))):
+prof=raw_input(" Choose class:")
+while (prof.isdigit()==False or prof not in [str(i) for i in range(0,len(class_list))]):
   prof=raw_input(" Choose class:")
-
-print_m(class_list[int(prof)]['description'],bcolors.OKBLUE,bcolors.ENDC,size_screen)
+prof=int(prof)
+print_m(class_list[prof]['description'],bcolors.OKBLUE,bcolors.ENDC,size_screen)
 
 # hero instance
 h=hero(nome,class_list[int(prof)])
