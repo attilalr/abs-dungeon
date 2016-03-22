@@ -193,8 +193,8 @@ print
 print " Create a hero:"
 nome=raw_input(" Name: ")
 
-scoundrel_dict={'name':'Scoundrel','description':'The scoundrel have 70% chance of fleeing a fight.','progression':['self.atk=self.atk+1; self.run_chance=0.70','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1']}
-fighter_dict={'name':'Fighter','description':'The fighter class gives 3 points of armor.','progression':['self.atk=self.atk+1; self.armor=self.armor+3','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1']}
+scoundrel_dict={'name':'Scoundrel','description':'The scoundrel have 70% chance of fleeing a fight.','progression':['self.atk=self.atk+1; self.run_chance=0.70','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1']}
+fighter_dict={'name':'Fighter','description':'The fighter class gives 3 points of armor.','progression':['self.atk=self.atk+1; self.armor=self.armor+2','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1','self.atk=self.atk+1; self.armor=self.armor+1']}
 
 ## CLASS SELECTION ##
 class_list=[fighter_dict,scoundrel_dict]
